@@ -35,15 +35,41 @@ int main(int argc, char *argv[]) {
     }
 
     // Puxa o arquivo referente a matriz A
-    FILE *arquivoA = fopen("matrizA.txt", "w");
+    FILE *arquivoA = fopen("arquivos/matrizA.txt", "w");
 
     // Verifica se o arquivo está vazio
     if(arquivoA == NULL) {
         printf("Erro na criação do arquivo MatrizA");
         return 1;
     }
-    
+
     fprintf(arquivoA, "%d %d \n", n1, m1);
+
+    for(int n = 0; n<n1; n++) {
+        for(int i = 0; i<m1; i++) {
+            fprintf(arquivoA,"%d ", matrizA[n][i]);
+        }
+        fprintf(arquivoA, "\n");
+    }
+    fclose(arquivoA);
+
+    FILE *arquivoB = fopen("arquivos/matrizB.txt", "w");
+
+    if(arquivoB == NULL) {
+        printf("Erro na criação do arquivo MatrizB");
+        return 1;
+    }
+
+    fprintf(arquivoB, "%d %d \n", n2, m2);
+
+    for(int n = 0; n<n2; n++) {
+        for(int i = 0; i<m2; i++) {
+            fprintf(arquivoB, "%d ", matrizB[n][i]);
+        }
+        fprintf(arquivoB, "\n");
+    }
+
+    fclose(arquivoB);
 
     return 0;
 }
