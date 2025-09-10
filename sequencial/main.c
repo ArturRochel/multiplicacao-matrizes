@@ -29,8 +29,15 @@ int main(int argc, char *argv[]) {
 
     int itensLidos = 0;
 
-    fscanf(arquivoA, "%d %d", &linhaA, &colunaA);
-    fscanf(arquivoB, "%d %d", &linhaB, &colunaB);
+    if (fscanf(arquivoA, "%d %d", &linhaA, &colunaA) != 2) {
+    printf("Erro na leitura do arquivo A\n");
+    return 1;
+    }
+
+    if (fscanf(arquivoB, "%d %d", &linhaB, &colunaB) != 2) {
+    printf("Erro na leitura do arquivo B\n");
+    return 1;
+    }
 
     if(colunaA != linhaB) {
         printf("As matrizes não podem ser multiplicadas");
@@ -47,11 +54,15 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    fclose(arquivoA);
+
     for(int i = 0; i<linhaB; i++) {
         for(int j = 0; j<colunaB; j++) {
             fscanf(arquivoB, "%d", &matrizB[i][j]);
         }
     }
+
+    fclose(arquivoB);
 
     clock_t inicio;
     inicio = clock();
@@ -64,6 +75,35 @@ int main(int argc, char *argv[]) {
             }
         }
     }
+
+    clock_t fim;
+    fim = clock();
+
+    double duracao = ((double)(fim-inicio)) / CLOCKS_PER_SEC;
+
+    // Abrir arquivo para gravar os resultados
+    FILE *resultadoSequencial = fopen("arquivos/resulSequencial.txt", "w");
+
+    if(resultadoSequencial == NULL) {
+        printf("Erro na criação do arquivo de resultado sequencial");
+        return 1;
+    }
+    
+    // Linha e Coluna
+    fprintf(resultadoSequencial, "%d %d \n", linhaA, colunaB);
+
+
+    for(int i = 0; i<linhaA; i++) {
+        for(int j = 0; j<colunaB; j++) {
+            fprintf(resultadoSequencial, "%d ", matrizResultado[i][j]);
+        }
+        fprintf(resultadoSequencial, "\n");
+    }
+
+    fprintf(resultadoSequencial, "\n");
+    fprintf(resultadoSequencial, "%f", duracao);
+
+    fclose(resultadoSequencial);
 
     return 0;
 }
