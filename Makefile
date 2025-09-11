@@ -1,10 +1,16 @@
 all: gerador
 
 gerador: 
-	gcc utilitario/main.c -o gerador
+	gcc programs/gerador.c -o bin/gerador
 
 sequencial:
-	gcc sequencial/main.c -o sequencial
+	gcc programs/sequencial.c -o bin/sequencial
 
-clean:
-	rm -f gerador sequencial
+paraleloT:
+	gcc programs/paraleloThread.c -o bin/paraleloThread
+
+cleanprograms:
+	rm -f bin/gerador bin/sequencial bin/paraleloThread
+
+cleantest:
+	rm -f arquivos/resultadosThreads/*.txt
