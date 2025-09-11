@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
     clock_t fim;
     fim = clock();
 
-    double duracao = ((double)(fim-inicio)) / CLOCKS_PER_SEC;
+    double duracao = (((double)(fim-inicio)) / CLOCKS_PER_SEC) * 1000;
 
     // Abrir arquivo para gravar os resultados
     FILE *resultadoSequencial = fopen("arquivos/resulSequencial.txt", "w");

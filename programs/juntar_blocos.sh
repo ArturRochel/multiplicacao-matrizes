@@ -31,5 +31,5 @@ for num in $numeros; do
 done
 
 # Somando os tempos de todas as threads
-tempoTotal=$(grep "Tempo gasto" "$pasta"/resultBlock-*.txt | awk '{s+=$4} END {print s}')
+tempoTotal=$(grep "Tempo gasto" "$pasta"/resultBlock-*.txt | awk '{if ($4 > max) max=$4} END {print max}')
 echo "Tempo total de execução: $tempoTotal segundos"
