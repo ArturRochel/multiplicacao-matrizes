@@ -55,16 +55,15 @@ void *multiplyBlock(void *arg){
             sum += M1[row][k] * M2[k][col];
         }
 
-        fprintf(fout, "%d ", sum);
+        fprintf(fout, "%d %d %d\n", row, col, sum);
 
         count++;
         idx++;
     }
 
     clock_t t_end = clock();
-    double elapsed = ((double)(t_end - t_start)) / CLOCKS_PER_SEC;
-
-    fprintf(fout, "\nTempo gasto: %f segundos\n", elapsed);
+    double elapsed = (((double)(t_end - t_start)) / CLOCKS_PER_SEC) * 1000;
+    fprintf(fout, "\nTempo gasto: %.3f ms\n", elapsed);
 
     fclose(fout);
 

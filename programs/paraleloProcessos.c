@@ -86,7 +86,7 @@ int main(int argc, char *argv[]){
             clock_gettime(CLOCK_MONOTONIC, &start);
             
             char filename[50];
-            sprintf(filename, "../arquivos/resultadosProcessos/resultado_%d.txt", k);
+            sprintf(filename, "../arquivos/resultadosProcessos/resultBlock-%d.txt", k);
             FILE *out = fopen(filename, "w");
             if (!out) {
                 perror("Erro ao criar arquivo de saída");
@@ -117,7 +117,7 @@ int main(int argc, char *argv[]){
             clock_gettime(CLOCK_MONOTONIC, &end);
             double elapsed = ((end.tv_sec - start.tv_sec) * 1000.0) + ((end.tv_nsec - start.tv_nsec) / 1000000.0);
 
-            fprintf(out, "Tempo gasto: %.3f ms\n", elapsed);
+            fprintf(out, "\nTempo gasto: %.3f ms\n", elapsed);
             fclose(out);
             exit(0);
         }
