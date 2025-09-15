@@ -17,6 +17,23 @@ else
     echo "Use 'processos' ou 'threads'"
     exit 1
 fi
+# Verifica se o usuário passou o parâmetro
+if [ $# -ne 1 ]; then
+    echo "Uso: $0 [processos|threads]"
+    exit 1
+fi
+
+# Define a pasta com base no parâmetro
+tipo=$1
+if [ "$tipo" = "processos" ]; then
+    pasta="../arquivos/resultadosProcessos"
+elif [ "$tipo" = "threads" ]; then
+    pasta="../arquivos/resultadosThreads"
+else
+    echo "Opção inválida: $tipo"
+    echo "Use 'processos' ou 'threads'"
+    exit 1
+fi
 
 # Arquivo final dentro da mesma pasta
 arquivoFinal="$pasta/resultadoFinal.txt"
