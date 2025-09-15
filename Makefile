@@ -9,6 +9,9 @@ sequencial:
 paraleloT:
 	gcc programs/paraleloThread.c -o bin/paraleloThread
 
+paraleloP:
+	gcc programs/paraleloProcessos.c -o bin/paraleloProcessos
+
 cleanprograms:
 	rm -f bin/gerador bin/sequencial bin/paraleloThread
 

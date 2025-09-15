@@ -65,6 +65,7 @@ void *multiplyBlock(void *arg){
     double elapsed = (((double)(t_end - t_start)) / CLOCKS_PER_SEC) * 1000;
     fprintf(fout, "\nTempo gasto: %.3f ms\n", elapsed);
 
+
     fclose(fout);
 
     pthread_exit(NULL);

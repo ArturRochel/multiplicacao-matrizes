@@ -49,6 +49,6 @@ for ((i=0; i<n1; i++)); do
     echo "$linha" >> "$arquivoFinal"
 done
 
-# Pegando o maior tempo entre todas as execuções (em ms)
 tempoTotal=$(grep "Tempo gasto" "$pasta"/resultBlock-*.txt | awk '{if ($3 > max) max=$3} END {print max}')
 echo "Tempo total de execução: $tempoTotal ms" >> "$arquivoFinal"
+
