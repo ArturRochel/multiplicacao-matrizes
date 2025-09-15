@@ -28,7 +28,7 @@ void *multiplyBlock(void *arg){
 
     //abrindo arquivo de saída para este bloco
     char filename[100];
-    sprintf(filename, "../arquivos/resultadosThreads/resultBlock-%d.txt", threadID);
+    sprintf(filename, "arquivos/resultadosThreads/resultBlock-%d.txt", threadID);
     FILE *fout = fopen(filename, "w");
     if(!fout){
         printf("Erro ao criar arquivo %s\n", filename);
@@ -80,8 +80,8 @@ int main(int argc, char *argv[]){
     char caminhoM1[100];
     char caminhoM2[100];
     
-    sprintf(caminhoM1, "../arquivos/%s", argv[1]);
-    sprintf(caminhoM2, "../arquivos/%s", argv[2]);
+    sprintf(caminhoM1, "arquivos/%s", argv[1]);
+    sprintf(caminhoM2, "arquivos/%s", argv[2]);
 
     int P = atoi(argv[3]);
 

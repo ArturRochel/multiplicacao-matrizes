@@ -16,8 +16,8 @@ int main(int argc, char *argv[]){
     char caminhoM1[100];
     char caminhoM2[100];
     //caminho para os arquivos das matrizes
-    sprintf(caminhoM1, "../arquivos/%s", argv[1]);
-    sprintf(caminhoM2, "../arquivos/%s", argv[2]);
+    sprintf(caminhoM1, "arquivos/%s", argv[1]);
+    sprintf(caminhoM2, "arquivos/%s", argv[2]);
 
     int P = atoi(argv[3]);
     if(P <= 0){
@@ -86,7 +86,7 @@ int main(int argc, char *argv[]){
             clock_gettime(CLOCK_MONOTONIC, &start);
             
             char filename[50];
-            sprintf(filename, "../arquivos/resultadosProcessos/resultBlock-%d.txt", k);
+            sprintf(filename, "arquivos/resultadosProcessos/resultBlock-%d.txt", k);
             FILE *out = fopen(filename, "w");
             if (!out) {
                 perror("Erro ao criar arquivo de saída");

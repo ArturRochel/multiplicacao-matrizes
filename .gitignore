@@ -1,1 +1,7 @@
-.vscode
+.vscode/
+bin/
+arquivos/matrizA.txt
+arquivos/matrizB.txt
+arquivos/resulSequencial.txt
+arquivos/resultadosProcessos/
+arquivos/resultadosThreads/
