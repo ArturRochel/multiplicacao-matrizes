@@ -9,9 +9,9 @@ fi
 # Define a pasta com base no parâmetro
 tipo=$1
 if [ "$tipo" = "processos" ]; then
-    pasta="../arquivos/resultadosProcessos"
+    pasta="arquivos/resultadosProcessos"
 elif [ "$tipo" = "threads" ]; then
-    pasta="../arquivos/resultadosThreads"
+    pasta="arquivos/resultadosThreads"
 else
     echo "Opção inválida: $tipo"
     echo "Use 'processos' ou 'threads'"
