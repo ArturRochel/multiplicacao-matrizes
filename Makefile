@@ -10,7 +10,7 @@ paraleloT:
 	gcc programs/paraleloThread.c -o bin/paraleloThread
 
 paraleloP:
-	gcc programs/paraleloProcessos.c -o bin/paraleloProcessos
+	gcc programs/paraleloProcessos.c -o bin/paraleloProcessos -lm
 
 cleanprograms:
 	rm -f bin/gerador bin/sequencial bin/paraleloThread
