@@ -1,3 +1,4 @@
+#define _POSIX_C_SOURCE 199309L
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -35,11 +36,11 @@ void *multiplyBlock(void *arg){
         pthread_exit(NULL);
     }
 
-
     //escrevendo o tamanho total de matriz
     fprintf(fout, "%d %d\n", n1, m2);
 
-    clock_t t_start = clock();
+    struct timespec inicio, fim;
+    clock_gettime(CLOCK_MONOTONIC, &inicio);
 
     int total_elements = n1 * m2;
     int count = 0;
@@ -61,10 +62,10 @@ void *multiplyBlock(void *arg){
         idx++;
     }
 
-    clock_t t_end = clock();
-    double elapsed = (((double)(t_end - t_start)) / CLOCKS_PER_SEC) * 1000;
-    fprintf(fout, "\nTempo gasto: %.3f ms\n", elapsed);
-
+    clock_gettime(CLOCK_MONOTONIC, &fim);
+    double elapsed = (fim.tv_sec - inicio.tv_sec) * 1000.0;
+    elapsed += (fim.tv_nsec - inicio.tv_nsec) / 1000000.0;
+    fprintf(fout, "Tempo(ms): %.3f\n", elapsed);
 
     fclose(fout);
 
