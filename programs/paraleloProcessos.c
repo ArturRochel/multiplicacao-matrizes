@@ -8,6 +8,7 @@
 
 
 int main(int argc, char *argv[]){
+    // verificando quantidade de argumentos
     if(argc != 4){
         fprintf(stderr, "Uso: %s <matriz1.txt> <matriz2.txt> <P>\n", argv[0]);
         return 1;
@@ -27,108 +28,108 @@ int main(int argc, char *argv[]){
 
     // ler o arquivos das matrizes
     int n1, m1, n2, m2;
-    FILE *f1 = fopen(caminhoM1, "r");
+    FILE *arquivo1 = fopen(caminhoM1, "r");
     //verificando se foi aberto
-    if (!f1) {
+    if (!arquivo1) {
         perror("Erro ao abrir matriz 1");
         return 1;
     }
-    fscanf(f1, "%d %d", &n1, &m1);
-    int **M1 = malloc(n1 * sizeof(int*));
+    fscanf(arquivo1, "%d %d", &n1, &m1);
+    int **matrizA = malloc(n1 * sizeof(int*));
     for(int i = 0; i < n1; i++){
-        M1[i] = malloc(m1 * sizeof(int));
+        matrizA[i] = malloc(m1 * sizeof(int));
         for(int j = 0; j < m1; j++){
-            fscanf(f1, "%d", &M1[i][j]);
+            fscanf(arquivo1, "%d", &matrizA[i][j]);
         }
     }
-    fclose(f1);
+    fclose(arquivo1);
 
-    FILE *f2 = fopen(caminhoM2, "r");
+    FILE *arquivo2 = fopen(caminhoM2, "r");
 
-    if (!f2) {
+    if (!arquivo2) {
         perror("Erro ao abrir matriz 2  ");
         return 1;
     }
 
-    fscanf(f2, "%d %d", &n2, &m2);
-    int **M2 = malloc(n2 * sizeof(int*));
+    fscanf(arquivo2, "%d %d", &n2, &m2);
+    int **matrizB = malloc(n2 * sizeof(int*));
     for(int i = 0; i < n2; i++){
-        M2[i] = malloc(m2 * sizeof(int));
+        matrizB[i] = malloc(m2 * sizeof(int));
         for(int j = 0; j < m2; j++){
-            fscanf(f2, "%d", &M2[i][j]);
+            fscanf(arquivo2, "%d", &matrizB[i][j]);
         }
     }
-    fclose(f2);
+    fclose(arquivo2);
 
     // verificando se é possivel multiplicar
     if(m1 != n2){
         fprintf(stderr, "Não é possível multiplicar.\n");
-        for (int i = 0; i < n1; i++) free(M1[i]);
-        free(M1);
-        for (int i = 0; i < n2; i++) free(M2[i]);
-        free(M2);
+        for (int i = 0; i < n1; i++) free(matrizA[i]);
+        free(matrizA);
+        for (int i = 0; i < n2; i++) free(matrizB[i]);
+        free(matrizB);
         return 1;
     }
     
 
     // preparando para divisão do trabalho
-    int totalElements = n1 * m2;
-    int numProcesses = (int)ceil((double)totalElements / P);
+    int totalElementos = n1 * m2;
+    int quantidadeDeProcessos = (int)ceil((double)totalElementos / P);
 
     // criando os processos
-    for(int k = 0; k < numProcesses; k++){
+    for(int i = 0; i < quantidadeDeProcessos; i++){
         pid_t pid = fork();
         // processo filho
         if(pid == 0){ 
-            struct timespec start, end;
+            struct timespec inicio, fim;
             
-            // criando arquivo de saída para este filho
-            clock_gettime(CLOCK_MONOTONIC, &start);
+            // iniciando contagem
+            clock_gettime(CLOCK_MONOTONIC, &inicio);
             
-            char filename[50];
-            sprintf(filename, "arquivos/resultadosProcessos/resultBlock-%d.txt", k);
-            FILE *out = fopen(filename, "w");
-            if (!out) {
+            char nomeArquivo[50];
+            sprintf(nomeArquivo, "arquivos/resultadosProcessos/resultBlock-%d.txt", i);
+            FILE *arquivoSaida = fopen(nomeArquivo, "w");
+            if (!arquivoSaida) {
                 perror("Erro ao criar arquivo de saída");
                 exit(1);
             }
 
-            fprintf(out, "%d %d\n", n1, m2);
+            fprintf(arquivoSaida, "%d %d\n", n1, m2);
 
             // calculando intervalo desse processo
-            int startIdx = k * P;
-            int endIdx = (k+1) * P;
-            if(endIdx > totalElements) {
-                endIdx = totalElements;
+            int indiceInicio = i * P;
+            int indiceFim = (i+1) * P;
+            if(indiceFim > totalElementos) {
+                indiceFim = totalElementos;
             }
 
-            for(int idx = startIdx; idx < endIdx; idx++){
-                int i = idx / m2;
-                int j = idx % m2;
+            for(int idx = indiceInicio; idx < indiceFim; idx++){
+                int linha = idx / m2;
+                int coluna = idx % m2;
 
-                int sum = 0;
+                int soma = 0;
                 for(int t = 0; t < m1; t++){
-                    sum += M1[i][t] * M2[t][j];
+                    soma += matrizA[linha][t] * matrizB[t][coluna];
                 }
-                fprintf(out, "%d %d %d\n", i, j, sum);
+                fprintf(arquivoSaida, "%d %d %d\n", linha, coluna, soma);
             }
 
 
-            clock_gettime(CLOCK_MONOTONIC, &end);
-            double elapsed = ((end.tv_sec - start.tv_sec) * 1000.0) + ((end.tv_nsec - start.tv_nsec) / 1000000.0);
+            clock_gettime(CLOCK_MONOTONIC, &fim);
+            double tempo = ((fim.tv_sec - inicio.tv_sec) * 1000.0) + ((fim.tv_nsec - inicio.tv_nsec) / 1000000.0);
 
-            fprintf(out, "\nTempo gasto: %.3f ms\n", elapsed);
-            fclose(out);
+            fprintf(arquivoSaida, "\nTempo gasto: %.3f ms\n", tempo);
+            fclose(arquivoSaida);
             exit(0);
         }
     }
-    for(int k = 0; k < numProcesses; k++){
+    for(int i = 0; i < quantidadeDeProcessos; i++){
         wait(NULL);
     }
 
-    for (int i = 0; i < n1; i++) free(M1[i]);
-    free(M1);
-    for (int i = 0; i < n2; i++) free(M2[i]);
-    free(M2);
+    for (int i = 0; i < n1; i++) free(matrizA[i]);
+    free(matrizA);
+    for (int i = 0; i < n2; i++) free(matrizB[i]);
+    free(matrizB);
     return 0;
 }

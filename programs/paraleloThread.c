@@ -6,68 +6,68 @@
 
 //struct para agilizar e vacilitar a passagem de informações
 typedef struct {
-    int **M1;
-    int **M2;
-    int n1, m1, n2, m2;
-    int startIndex;
+    int **matrizA;
+    int **matrizB;
+    int linha1, coluna1, linha2, coluna2;
+    int indiceInicio;
     int P;
     int threadID;
 } ThreadData;
 
-void *multiplyBlock(void *arg){
+void *multiplicarBloco(void *arg){
     ThreadData *data = (ThreadData *)arg;
 
-    int n1 = data->n1;
-    int m1 = data->m1;
-    int n2 = data->n2;
-    int m2 = data->m2;
-    int **M1 = data->M1;
-    int **M2 = data->M2;
-    int start = data->startIndex;
+    int linha1 = data->linha1;
+    int coluna1 = data->coluna1;
+    int linha2 = data->linha2;
+    int coluna2 = data->coluna2;
+    int **matrizA = data->matrizA;
+    int **matrizB = data->matrizB;
+    int start = data->indiceInicio;
     int P = data->P;
     int threadID = data->threadID;
 
     //abrindo arquivo de saída para este bloco
-    char filename[100];
-    sprintf(filename, "arquivos/resultadosThreads/resultBlock-%d.txt", threadID);
-    FILE *fout = fopen(filename, "w");
-    if(!fout){
-        printf("Erro ao criar arquivo %s\n", filename);
+    char nomeArquivo[100];
+    sprintf(nomeArquivo, "arquivos/resultadosThreads/resultBlock-%d.txt", threadID);
+    FILE *arquivoSaida = fopen(nomeArquivo, "w");
+    if(!arquivoSaida){
+        printf("Erro ao criar arquivo %s\n", nomeArquivo);
         pthread_exit(NULL);
     }
 
     //escrevendo o tamanho total de matriz
-    fprintf(fout, "%d %d\n", n1, m2);
+    fprintf(arquivoSaida, "%d %d\n", linha1, coluna2);
 
     struct timespec inicio, fim;
     clock_gettime(CLOCK_MONOTONIC, &inicio);
 
-    int total_elements = n1 * m2;
-    int count = 0;
+    int total_elements = linha1 * coluna2;
+    int contador = 0;
     int idx = start;
 
-    while(count < P && idx < total_elements){
-        int row = idx / m2;
-        int col = idx % m2;
+    while(contador < P && idx < total_elements){
+        int linha = idx / coluna2;
+        int coluna = idx % coluna2;
 
         // multiplicação das matrizes
-        int sum = 0;
-        for(int k = 0; k < m1; k++){
-            sum += M1[row][k] * M2[k][col];
+        int soma = 0;
+        for(int k = 0; k < coluna1; k++){
+            soma += matrizA[linha][k] * matrizB[k][coluna];
         }
 
-        fprintf(fout, "%d %d %d\n", row, col, sum);
+        fprintf(arquivoSaida, "%d %d %d\n", linha, coluna, soma);
 
-        count++;
+        contador++;
         idx++;
     }
 
     clock_gettime(CLOCK_MONOTONIC, &fim);
-    double elapsed = (fim.tv_sec - inicio.tv_sec) * 1000.0;
-    elapsed += (fim.tv_nsec - inicio.tv_nsec) / 1000000.0;
-    fprintf(fout, "Tempo(ms): %.3f\n", elapsed);
+    double tempo = (fim.tv_sec - inicio.tv_sec) * 1000.0;
+    tempo += (fim.tv_nsec - inicio.tv_nsec) / 1000000.0;
+    fprintf(arquivoSaida, "Tempo(ms): %.3f\n", tempo);
 
-    fclose(fout);
+    fclose(arquivoSaida);
 
     pthread_exit(NULL);
 }
@@ -75,15 +75,15 @@ void *multiplyBlock(void *arg){
 int main(int argc, char *argv[]){
     // verificando quantidade de argumentos
     if(argc != 4){
-        printf("Uso correto: %s <arquivo M1> <arquivo M2> <P>\n", argv[0]);
+        printf("Uso correto: %s <arquivo matrizA> <arquivo matrizB> <P>\n", argv[0]);
         return 1;
     }
     // armazenando informações
-    char caminhoM1[100];
-    char caminhoM2[100];
+    char caminhoMatrizA[100];
+    char caminhoMatrizB[100];
     
-    sprintf(caminhoM1, "arquivos/%s", argv[1]);
-    sprintf(caminhoM2, "arquivos/%s", argv[2]);
+    sprintf(caminhoMatrizA, "arquivos/%s", argv[1]);
+    sprintf(caminhoMatrizB, "arquivos/%s", argv[2]);
 
     int P = atoi(argv[3]);
 
@@ -95,91 +95,91 @@ int main(int argc, char *argv[]){
 
 
      
-    int n1, m1;
+    int linha1, coluna1;
     // abrindo arquivo
-    FILE *f1 = fopen(caminhoM1, "r");
-    if(f1 == NULL){
-        printf("Erro ao abrir o arquivo %s\n", caminhoM1);
+    FILE *arquivoMatrizA = fopen(caminhoMatrizA, "r");
+    if(arquivoMatrizA == NULL){
+        printf("Erro ao abrir o arquivo %s\n", caminhoMatrizA);
         return 1;
     }
     // lendo as dimenções da matriz     
-    fscanf(f1, "%d %d", &n1, &m1);
+    fscanf(arquivoMatrizA, "%d %d", &linha1, &coluna1);
 
     //alocando dinamicamente
-    int  **M1 = malloc (n1 * sizeof(int *));
-    for(int i = 0; i < n1; i++){
-        M1[i] = malloc(m1 * sizeof(int));
+    int  **matrizA = malloc (linha1 * sizeof(int *));
+    for(int i = 0; i < linha1; i++){
+        matrizA[i] = malloc(coluna1 * sizeof(int));
     }
 
-    for(int i = 0; i < n1; i++){
-        for(int j = 0; j < m1; j++){
-            fscanf(f1, "%d", &M1[i][j]);
+    for(int i = 0; i < linha1; i++){
+        for(int j = 0; j < coluna1; j++){
+            fscanf(arquivoMatrizA, "%d", &matrizA[i][j]);
         }
     }
 
-    fclose(f1);
+    fclose(arquivoMatrizA);
 
-    int n2, m2;
+    int linha2, coluna2;
 
     //abrindo segundo arquivo
-    FILE *f2 = fopen(caminhoM2, "r");
-    if(f2 == NULL){
-        printf("Erro ao abrir o arquivo %s\n", caminhoM2);
+    FILE *arquivoMatriz2 = fopen(caminhoMatrizB, "r");
+    if(arquivoMatriz2 == NULL){
+        printf("Erro ao abrir o arquivo %s\n", caminhoMatrizB);
         return 1;
     }
     // lendo as dimensões da segunda matriz
-    fscanf(f2, "%d %d", &n2, &m2);
+    fscanf(arquivoMatriz2, "%d %d", &linha2, &coluna2);
 
     //alocando dinamicamente
-    int **M2 = malloc(n2 *sizeof(int *));
-    for(int i = 0; i < n2; i++){
-        M2[i] = malloc(m2 * sizeof(int));
+    int **matrizB = malloc(linha2 *sizeof(int *));
+    for(int i = 0; i < linha2; i++){
+        matrizB[i] = malloc(coluna2 * sizeof(int));
     }
 
-    for(int i = 0; i < n2; i++){
-        for(int j = 0; j < m2; j++){
-            fscanf(f2, "%d", &M2[i][j]);
+    for(int i = 0; i < linha2; i++){
+        for(int j = 0; j < coluna2; j++){
+            fscanf(arquivoMatriz2, "%d", &matrizB[i][j]);
         }
     }
 
-    fclose(f2);
+    fclose(arquivoMatriz2);
 
     // verificando se é possivel fazer a multiplicação
-    if(m1 != n2){
+    if(coluna1 != linha2){
         printf("Não é possível fazer a multiplicação.\n");
         return 1;
     }
 
     // calculando as threads
-    int totalElementos = n1*m2;
+    int totalElementos = linha1*coluna2;
     int numeroThreads = (totalElementos + P -1)/P; // função teto
 
     pthread_t threads[numeroThreads];
     ThreadData threadData[numeroThreads];
 
     for(int t = 0; t < numeroThreads; t++){
-        threadData[t].M1 = M1;
-        threadData[t].M2 = M2;
-        threadData[t].n1 = n1;
-        threadData[t].m1 = m1;
-        threadData[t].n2 = n2;
-        threadData[t].m2 = m2;
-        threadData[t].startIndex = t * P;
+        threadData[t].matrizA = matrizA;
+        threadData[t].matrizB = matrizB;
+        threadData[t].linha1 = linha1;
+        threadData[t].coluna1 = coluna1;
+        threadData[t].linha2 = linha2;
+        threadData[t].coluna2 = coluna2;
+        threadData[t].indiceInicio = t * P;
         threadData[t].P = P;
         threadData[t].threadID = t;
 
-        pthread_create(&threads[t], NULL, multiplyBlock, (void *)&threadData[t]);
+        pthread_create(&threads[t], NULL, multiplicarBloco, (void *)&threadData[t]);
     }
 
     for(int t = 0; t < numeroThreads; t++){
         pthread_join(threads[t], NULL);
     }
 
-    for(int i = 0; i < n1; i++) free(M1[i]);
-    free(M1);
+    for(int i = 0; i < linha1; i++) free(matrizA[i]);
+    free(matrizA);
 
-    for(int i = 0; i < n2; i++) free(M2[i]);
-    free(M2);
+    for(int i = 0; i < linha2; i++) free(matrizB[i]);
+    free(matrizB);
 
     return 0;
 }
