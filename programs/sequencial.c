@@ -1,3 +1,4 @@
+#define _POSIX_C_SOURCE 199309L
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -68,7 +69,8 @@ int main(int argc, char *argv[]) {
     fclose(arquivoB);
 
     // Multiplicação sequencial
-    clock_t inicio = clock();
+    struct timespec inicio, fim;
+    clock_gettime(CLOCK_MONOTONIC, &inicio);
 
     for(int i = 0; i < linhaA; i++) {
         for(int j = 0; j < colunaB; j++) {
@@ -79,8 +81,10 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    clock_t fim = clock();
-    double duracao = (((double)(fim - inicio)) / CLOCKS_PER_SEC) * 1000;
+    clock_gettime(CLOCK_MONOTONIC, &fim);
+
+    double duracao = (fim.tv_sec - inicio.tv_sec) * 1000.0;
+    duracao += (fim.tv_nsec - inicio.tv_nsec) / 1000000.0;
 
     // Gravação do resultado
     FILE *resultadoSequencial = fopen("arquivos/resulSequencial.txt", "w");
@@ -95,7 +99,7 @@ int main(int argc, char *argv[]) {
             fprintf(resultadoSequencial, "%d ", matrizResultado[i][j]);
         fprintf(resultadoSequencial, "\n");
     }
-    fprintf(resultadoSequencial, "\n%f", duracao);
+    fprintf(resultadoSequencial, "\n%.3f", duracao);
     fclose(resultadoSequencial);
 
     // Liberação da memória
